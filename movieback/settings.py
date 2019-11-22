@@ -36,6 +36,14 @@ INSTALLED_APPS = [
     'movies',
     'rest_framework',
     'corsheaders',
+
+    'rest_framework.authtoken',
+    'rest_auth',
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'rest_auth.registration',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -148,3 +156,10 @@ JWT_AUTH ={
 }
 
 CORS_ORIGIN_ALLOW_ALL = True
+
+SITE_ID = 1
+REST_USE_JWT = True
+
+ACCOUNT_EMAIL_REQUIRED = False
+
+ACCOUNT_EMAIL_VERIFICATION = 'none'

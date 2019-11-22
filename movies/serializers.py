@@ -13,11 +13,11 @@ class GenreSerializer(serializers.ModelSerializer):
     like_users = serializers.SlugRelatedField(many=True, read_only=True, slug_field='username')
     class Meta:
         model = Genre
-        fields = ('like_users',)
+        fields = ('id', 'typename', 'like_users',)
 
 
 class MovieSerializer(serializers.ModelSerializer):
     class Meta:
         model = Movie
-        fields = ('id', 'title', 'title_en', 'score', 'poster_url', 'summary', 'director', 'poster_url', 'video_url', 'ost_url', 'genre',)
+        fields = ('id', 'title', 'title_en', 'score', 'audience', 'poster_url', 'summary', 'director', 'poster_url', 'video_url', 'ost_url', 'genre',)
         

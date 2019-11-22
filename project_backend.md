@@ -112,14 +112,20 @@ class Genre(models.Model):
     like_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='like_genres')
     # 장르 좋아요(장르 추천)
 
+
+class Director(models.Model):
+    director = models.CharField(max_length=45)
+
+
 class Movie(models.Model):
     title = models.CharField(max_length=150)
     summary = models.TextField()
-    director = models.CharField(max_length=45)
-    genre = models.ManyToManyField(Genre, related_name='')
+    director =  models.ManyToManyField(Director, related_name='directormovie')
+    genre = models.ManyToManyField(Genre, related_name='genremovie')
 
     title_en = models.CharField(max_length=150)
-    score = models.IntegerField()
+    score = models.FloatField()
+    audience = models.IntegerField()
     poster_url = models.CharField(max_length=500)
     video_url = models.CharField(max_length=500, null=True)
     ost_url = models.CharField(max_length=500, null=True)
@@ -128,7 +134,7 @@ class Movie(models.Model):
 
 class Rating(models.Model):
     comment = models.TextField()
-    score = models.IntegerField()
+    score = models.FloatField()
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 ```
@@ -140,7 +146,7 @@ class Rating(models.Model):
 ```python
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from .models import Genre, Director, Actor, Movie, Hashtag, Post
+from .models import Genre, Movie, Rating
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -153,14 +159,13 @@ class GenreSerializer(serializers.ModelSerializer):
     like_users = serializers.SlugRelatedField(many=True, read_only=True, slug_field='username')
     class Meta:
         model = Genre
-        fields = ('like_users',)
+        fields = ('id', 'typename', 'like_users',)
 
 
 class MovieSerializer(serializers.ModelSerializer):
     class Meta:
         model = Movie
-        fields = ('id', 'title', 'title_en', 'score', 'poster_url', 'summary', 
-        'director', 'poster_url', 'video_url', 'ost_url', 'genre',)
+        fields = ('id', 'title', 'title_en', 'score', 'audience', 'poster_url', 'summary', 'director', 'poster_url', 'video_url', 'ost_url', 'genre',)
         
 ```
 
@@ -205,6 +210,61 @@ class AlbumSerializer(serializers.ModelSerializer):
 
 
 
+### urls.py
+
+```python
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('usersinfo/', views.usersinfo),
+    path('genresinfo/', views.genresinfo),
+    path('moviesinfo/', views.moviesinfo),
+]
+```
+
+
+
+### views.py
+
+```python
+from django.shortcuts import render, get_object_or_404
+from django.http import JsonResponse, HttpResponse
+from django.contrib.auth import get_user_model
+
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework_jwt.authentication import JSONWebTokenAuthentication
+
+from .serializers import UserSerializer, GenreSerializer, MovieSerializer
+from .models import Genre, Movie, Rating, Director
+
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny, ])
+def usersinfo(request):
+    users = get_user_model().objects.all()
+    serializer = UserSerializer(users, many=True)
+    return JsonResponse(serializer.data, safe=False)
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny, ])
+def genresinfo(request):
+    genres = Genre.objects.all()
+    serializer = GenreSerializer(genres, many=True)
+    return JsonResponse(serializer.data, safe=False)
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny, ])
+def moviesinfo(request):
+    movies = Movie.objects.all()
+    serializer = MovieSerializer(movies, many=True)
+    return JsonResponse(serializer.data, safe=False)
+```
+
 
 
 
@@ -219,10 +279,11 @@ from django.contrib.auth.models import AbstractUser
 from django.conf import settings
 from movies.models import Genre
 
-# Create your models here.
 
 class User(AbstractUser):
-    genre_liker = models.ManyToManyField(Genre, related_name='liker_users')
+    # null=True 는 필드의 값이 NULL(정보 없음)로 저장되는 것을 허용
+    # blank=True 는 필드가 폼(입력 양식)에서 빈 채로 저장되는 것을 허용
+    genre_liker = models.ManyToManyField(Genre, related_name='liker_users', null=True)
     # accounts_user_genre_liker
     followers = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="followings")
     # 팔로워 팔로잉 기능
@@ -240,6 +301,66 @@ from .models import User
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('username', 'email', 'password', 'genre_liker',)
+        fields = ('username', 'email', 'password', 'genre_liker', 'is_staff',)
 ```
+
+
+
+### urls.py
+
+```python
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('userfind/', views.userfind),
+]
+```
+
+
+
+### views.py
+
+```python
+from django.shortcuts import render, get_object_or_404
+from django.http import JsonResponse, HttpResponse
+
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
+
+from django.contrib.auth import get_user_model
+from .models import User
+from .serializers import UserSerializer
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny, ])
+def userfind(request):
+    users = get_user_model().objects.all()
+    serializer = UserSerializer(users, many=True)
+    return JsonResponse(serializer.data, safe=False)
+
+# @api_view(['POST'])
+# def userfind(request):
+#     serializer = serializers.UserSerializer(data=request.data)
+#     if serializer.is_valid(raise_exception=request.data):
+#         all_users = models.User.objects.all()
+#         serializer = serializers.UserSerializer(all_users, many=True)
+
+#         return Response(data=serializer.data)
+
+
+# class ListAllUsers(APIView):
+#     def userfind(self, request, format=None):
+#         all_users = models.User.objects.all()
+#         serializer = serializers.UserSerializer(all_users, many=True)
+
+#         return Response(data=serializer.data)
+```
+
+
+
+site : https://freekim.tistory.com/8
 
