@@ -6,10 +6,14 @@ class Genre(models.Model):
     typename = models.CharField(max_length=150)
     like_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='like_genres')
     # 장르 좋아요(장르 추천)
+    def __str__(self):
+        return "{}. {}".format(self.id, self.typename)
 
 
 class Director(models.Model):
     director = models.CharField(max_length=45)
+    def __str__(self):
+        return "{}. {}".format(self.id, self.director)
 
 
 class Movie(models.Model):
@@ -26,6 +30,8 @@ class Movie(models.Model):
     ost_url = models.CharField(max_length=500, null=True)
     # like_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="like_movies")
     # 영화 좋아요
+    def __str__(self):
+        return "{}. {}".format(self.id, self.title)
 
 class Rating(models.Model):
     comment = models.TextField()
