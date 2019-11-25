@@ -48,3 +48,25 @@ def signup(request):
         
 #         return JsonResponse(serializer.data)
 #     return HttpResponse(status=400)
+
+
+
+# @api_view(['GET'])
+# @permission_classes([IsAuthenticated, ])
+# @authentication_classes([JSONWebTokenAuthentication, ])
+# def user_detail(request, user_id):
+#     user = get_object_or_404(get_user_model(), id=user_id)
+#     if request.user == user:
+#         serializer = UserSerializer(user)
+#         return JsonResponse(serializer.data)
+#     return HttpResponse('허가되지않은 접근입니다.', status=403)
+
+
+# @api_view(['GET'])
+# @permission_classes([IsAuthenticated, ])
+# @authentication_classes([JSONWebTokenAuthentication, ])
+# def user_posts(request, user_id):
+#     user = get_object_or_404(get_user_model(), id=user_id)
+#     posts = user.posts.all()
+#     serializer = PostSerializer(posts, many=True)
+#     return JsonResponse(serializer.data, safe=False)

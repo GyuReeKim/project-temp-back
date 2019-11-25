@@ -13,6 +13,7 @@ class DirectorSerializer(serializers.ModelSerializer):
         fields = ('id', 'name',)
 
 class MovieSerializer(serializers.ModelSerializer):
+    # movie_genres = GenreSerializer(many=True)
     movie_directors = DirectorSerializer(many=True)
     grade = GradeSerializer()
     class Meta:
@@ -28,7 +29,7 @@ class GenreSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'movies')
 
 class MovieDetailSerializer(serializers.ModelSerializer):
-    genres = GenreSerializer(many=True)
+    movie_genres = GenreSerializer(many=True)
     movie_directors = DirectorSerializer(many=True)
     grade = GradeSerializer()
     class Meta:
