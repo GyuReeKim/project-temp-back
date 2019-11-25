@@ -6,48 +6,9 @@ from rest_framework.decorators import api_view, permission_classes, authenticati
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
-from .serializers import UserSerializer, GenreSerializer, MovieSerializer, GradeSerializer, DirectorSerializer, ReviewSerializer
+from .serializers import GenreSerializer, MovieSerializer, GradeSerializer, DirectorSerializer, ReviewSerializer
 from .models import Genre, Movie, Review, Director, Grade
 from rest_framework.response import Response
-
-
-
-
-
-@api_view(['GET'])
-@permission_classes([AllowAny, ])
-def users(request):
-    users = get_user_model().objects.all()
-    serializer = UserSerializer(users, many=True)
-    return Response(serializer.data)
-    # return JsonResponse(serializer.data, safe=False)
-
-
-@api_view(['GET'])
-@permission_classes([AllowAny, ])
-def genres(request):
-    genres = Genre.objects.all()
-    serializer = GenreSerializer(genres, many=True)
-    return Response(serializer.data)
-    # return JsonResponse(serializer.data, safe=False)
-
-
-@api_view(['GET'])
-@permission_classes([AllowAny, ])
-def grades(request):
-    grades = Grade.objects.all()
-    serializer = GradeSerializer(grades, many=True)
-    return Response(serializer.data)
-    # return JsonResponse(serializer.data, safe=False)
-
-
-@api_view(['GET'])
-@permission_classes([AllowAny, ])
-def directors(request):
-    directors = Director.objects.all()
-    serializer = DirectorSerializer(directors, many=True)
-    return Response(serializer.data)
-    # return JsonResponse(serializer.data, safe=False)
 
 
 @api_view(['GET'])
@@ -60,10 +21,41 @@ def movies(request):
 
 
 @api_view(['GET'])
+@permission_classes([AllowAny, ])
 def movies_detail(request, movie_id):
     movie = get_object_or_404(Movie, id=movie_id)
     serializer = MovieSerializer(movie)
     return Response(serializer.data)
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny, ])
+def genres(request):
+    genres = Genre.objects.all()
+    serializer = GenreSerializer(genres, many=True)
+    return Response(serializer.data)
+    # return JsonResponse(serializer.data, safe=False)
+
+
+# @api_view(['GET'])
+# @permission_classes([AllowAny, ])
+# def grades(request):
+#     grades = Grade.objects.all()
+#     serializer = GradeSerializer(grades, many=True)
+#     return Response(serializer.data)
+#     # return JsonResponse(serializer.data, safe=False)
+
+
+# @api_view(['GET'])
+# @permission_classes([AllowAny, ])
+# def directors(request):
+#     directors = Director.objects.all()
+#     serializer = DirectorSerializer(directors, many=True)
+#     return Response(serializer.data)
+#     # return JsonResponse(serializer.data, safe=False)
+
+
+
 
 
 @api_view(['GET'])

@@ -9,22 +9,19 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_jwt.settings import api_settings
 
 from django.contrib.auth import get_user_model
-from .models import User
 from .serializers import UserSerializer
-from .forms import CreateUserForm
-
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated, ])
-def userfind(request):
+@permission_classes([AllowAny, ])
+def users(request):
     users = get_user_model().objects.all()
     serializer = UserSerializer(users, many=True)
+    # return Response(serializer.data)
     return JsonResponse(serializer.data, safe=False)
 
 
-
 @api_view(['POST'])
-@permission_classes([IsAuthenticated, ])
+@permission_classes([AllowAny, ])
 def signup(request):
     serializer = UserSerializer(data=request.data)
     if serializer.is_valid(raise_exception=True):
@@ -37,3 +34,17 @@ def signup(request):
 
         return JsonResponse({'token': token})
     return HttpResponse(status=400)
+
+
+# @api_view(['POST'])
+# @permission_classes([AllowAny,])
+# def signup(request):
+#     serializer = UserSerializer(data=request.POST)
+#     if serializer.is_valid(raise_exception=True):
+#         password = serializer.validated_data.get('password')
+#         user = serializer.save()
+#         user.set_password(raw_password=password)
+#         user.save()
+        
+#         return JsonResponse(serializer.data)
+#     return HttpResponse(status=400)

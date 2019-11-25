@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.urls import path, include
 
 from rest_framework_jwt.views import obtain_jwt_token
+
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
@@ -31,9 +32,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api-token-auth/', obtain_jwt_token),
     
-    path('api/v1/', include('movies.urls')),
-    path('accounts/', include('accounts.urls')),
-    path('movies/', include('movies.urls')),
+    path('api/v1/movies/', include('movies.urls')),
+    path('api/v1/accounts/', include('accounts.urls')),
 
     path('rest-auth/', include('rest_auth.urls')),   
     path('rest-auth/registration/', include('rest_auth.registration.urls')),
