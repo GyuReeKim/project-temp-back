@@ -28,12 +28,12 @@ def userfind(request):
 def signup(request):
     serializer = UserSerializer(data=request.data)
     if serializer.is_valid(raise_exception=True):
-        jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
-        jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
+        jwt_payload = api_settings.JWT_PAYLOAD_HANDLER
+        jwt_encode = api_settings.JWT_ENCODE_HANDLER
         user = serializer.save()
 
-        payload = jwt_payload_handler(user)
-        token = jwt_encode_handler(payload)
+        payload = jwt_payload(user)
+        token = jwt_encode(payload)
 
         return JsonResponse({'token': token})
     return HttpResponse(status=400)
