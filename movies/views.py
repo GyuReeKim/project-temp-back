@@ -6,7 +6,7 @@ from rest_framework.decorators import api_view, permission_classes, authenticati
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
-from .serializers import GenreSerializer, MovieSerializer, GradeSerializer, DirectorSerializer, ReviewSerializer
+from .serializers import GenreSerializer, MovieSerializer, GradeSerializer, DirectorSerializer, ReviewSerializer, MovieDetailSerializer
 from .models import Genre, Movie, Review, Director, Grade
 from rest_framework.response import Response
 
@@ -24,7 +24,7 @@ def movies(request):
 @permission_classes([AllowAny, ])
 def movie_detail(request, movie_id):
     movie = get_object_or_404(Movie, id=movie_id)
-    serializer = MovieSerializer(movie)
+    serializer = MovieDetailSerializer(movie)
     return Response(serializer.data)
 
 

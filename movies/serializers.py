@@ -2,6 +2,11 @@ from rest_framework import serializers
 from .models import Genre, Movie, Review, Director, Grade
 
 
+class TempGenreSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Genre
+        fields = ('id', 'name',)
+
 class GradeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Grade
@@ -13,7 +18,7 @@ class DirectorSerializer(serializers.ModelSerializer):
         fields = ('id', 'name',)
 
 class MovieSerializer(serializers.ModelSerializer):
-    # movie_genres = GenreSerializer(many=True)
+    movie_genres = TempGenreSerializer(many=True)
     movie_directors = DirectorSerializer(many=True)
     grade = GradeSerializer()
     class Meta:
