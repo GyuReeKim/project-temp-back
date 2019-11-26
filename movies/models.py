@@ -42,3 +42,4 @@ class Review(models.Model):
     score = models.FloatField()
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
     review_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    create_at = models.DateTimeField(auto_now_add=True)

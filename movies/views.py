@@ -13,6 +13,33 @@ from rest_framework.response import Response
 
 @api_view(['GET'])
 @permission_classes([AllowAny, ])
+def grades(request):
+    grades = Grade.objects.all()
+    serializer = GradeSerializer(grades, many=True)
+    return Response(serializer.data)
+    # return JsonResponse(serializer.data, safe=False)
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny, ])
+def directors(request):
+    directors = Director.objects.all()
+    serializer = DirectorSerializer(directors, many=True)
+    return Response(serializer.data)
+    # return JsonResponse(serializer.data, safe=False)
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny, ])
+def genres(request):
+    genres = Genre.objects.all()
+    serializer = GenreSerializer(genres, many=True)
+    return Response(serializer.data)
+    # return JsonResponse(serializer.data, safe=False)
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny, ])
 def movies(request):
     movies = Movie.objects.all()
     serializer = MovieSerializer(movies, many=True)
@@ -30,36 +57,6 @@ def movie_detail(request, movie_id):
 
 @api_view(['GET'])
 @permission_classes([AllowAny, ])
-def genres(request):
-    genres = Genre.objects.all()
-    serializer = GenreSerializer(genres, many=True)
-    return Response(serializer.data)
-    # return JsonResponse(serializer.data, safe=False)
-
-
-# @api_view(['GET'])
-# @permission_classes([AllowAny, ])
-# def grades(request):
-#     grades = Grade.objects.all()
-#     serializer = GradeSerializer(grades, many=True)
-#     return Response(serializer.data)
-#     # return JsonResponse(serializer.data, safe=False)
-
-
-# @api_view(['GET'])
-# @permission_classes([AllowAny, ])
-# def directors(request):
-#     directors = Director.objects.all()
-#     serializer = DirectorSerializer(directors, many=True)
-#     return Response(serializer.data)
-#     # return JsonResponse(serializer.data, safe=False)
-
-
-
-
-
-@api_view(['GET'])
-@permission_classes([AllowAny, ])
 def review(request):
     reviews = Review.objects.all()
     serializer = ReviewSerializer(reviews, many=True)
@@ -67,21 +64,24 @@ def review(request):
     # return JsonResponse(serializer.data, safe=False)
 
 
+
 @api_view(['POST'])
-@permission_classes((IsAuthenticated,))  
-@authentication_classes((JSONWebTokenAuthentication,))  
+@permission_classes([IsAuthenticated,])  
+@authentication_classes([JSONWebTokenAuthentication,])  
 def create_reviews(request, movie_id):
-    serializer = ReviewSerializer(data=request.POST)
-    if serializer.is_valid():
-        serializer.save()
+    movie = get_object_or_404(Movie, id=movie_id)
+    serializer = ReviewSerializer(data=request.data)
+    if serializer.is_valid(raise_exception=True):
+        serializer.save(movie=movie, review_user=request.user)
+        # return Response({'message':"작성되었습니다."})
         return JsonResponse(serializer.data)
     return HttpResponse(status=400)
 
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
-@permission_classes((IsAuthenticated,)) 
-@authentication_classes((JSONWebTokenAuthentication,))
+@permission_classes([IsAuthenticated,]) 
+@authentication_classes([JSONWebTokenAuthentication,])
 def reviews_detail(request, review_id):
     review = get_object_or_404(Review, id=review_id)
     serializer = ReviewSerializer(data=request.data)
@@ -90,13 +90,23 @@ def reviews_detail(request, review_id):
         return JsonResponse(serializer.data)
     elif request.method == 'PUT':
         serializer = ReviewSerializer(review, data=request.data)
-        if serializer.is_valid():
+        if serializer.is_valid(raise_exception=True):
             serializer.save()
             return JsonResponse(serializer.data)
         return HttpResponse(status=400)
     elif request.method == 'DELETE':
         review.delete()
         return Response({'message':"삭제되었습니다."})
+
+
+
+
+
+
+
+
+
+
 
 
 # @api_view(['POST'])
