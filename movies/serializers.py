@@ -1,5 +1,12 @@
 from rest_framework import serializers
 from .models import Genre, Movie, Review, Director, Grade
+from accounts.models import User
+
+
+class TempUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('__all__')
 
 
 class TempGenreSerializer(serializers.ModelSerializer):
@@ -56,3 +63,11 @@ class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review
         fields = ('comment', 'score',)
+
+
+class TempReviewSerializer(serializers.ModelSerializer):
+    review_user = TempUserSerializer()
+    class Meta:
+        model = Review
+        fields = ('comment', 'score', 'review_user', 'create_at',)
+

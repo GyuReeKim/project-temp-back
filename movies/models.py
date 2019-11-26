@@ -43,3 +43,6 @@ class Review(models.Model):
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
     review_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     create_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return "{} : {}".format(self.score, self.movie)
