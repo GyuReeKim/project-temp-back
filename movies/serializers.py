@@ -12,10 +12,19 @@ class GradeSerializer(serializers.ModelSerializer):
         model = Grade
         fields = ('id', 'name',)
 
+class TempMovieSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Movie
+        fields = ('id', 'title', 'title_en', 'score', 'audience', 'poster_url', 
+        'summary', 'movie_directors', 'video_url', 'ost_url', 'movie_genres', 'grade',)
+
+
 class DirectorSerializer(serializers.ModelSerializer):
+    director_movies = TempMovieSerializer(many=True)
+    # movie_genres = GradeSerializer(many=True)
     class Meta:
         model = Director
-        fields = ('id', 'name',)
+        fields = ('id', 'name', 'director_movies', )
 
 class MovieSerializer(serializers.ModelSerializer):
     movie_genres = TempGenreSerializer(many=True)

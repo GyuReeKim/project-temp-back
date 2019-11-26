@@ -8,7 +8,7 @@ urlpatterns = [
     path('<int:movie_id>/', views.movie_detail),
 
     # path('grades/', views.grades),
-    # path('directors/', views.directors),
+    path('directors/', views.directors),
 
     path('review/', views.review),
     path('<int:movie_id>/reviews/', views.create_reviews),
