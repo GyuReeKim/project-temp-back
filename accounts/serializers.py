@@ -11,7 +11,7 @@ class UserSerializer(serializers.ModelSerializer):
 class MovieSerializer(serializers.ModelSerializer):
     class Meta:
         model = Movie
-        fields = ('title',)
+        fields = ('title', 'poster_url',)
 
 class ReviewSerializer(serializers.ModelSerializer):
     movie = MovieSerializer()
